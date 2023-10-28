@@ -1,9 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, flash
 import os
 import json
+if os.path.exists("env.py"):
+    import env
 
 # name is the built in variable for name of the app
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 
 # decorator to wrap function - if user returns to route directory,
 # triggers index()
@@ -34,8 +37,12 @@ def about_character(character_name):
     return render_template("character.html", character=character)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
+    if request.method == "POST":
+        flash("Thanks {}, we have received your message!".format(request.form.get("name")))
+        # print(request.form.get("name"))
+        print(request.form["email"])
     return render_template("contact.html", page_title="Contact")
 
 
